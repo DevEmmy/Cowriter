@@ -11,6 +11,10 @@ function secret() {
   return new TextEncoder().encode(s);
 }
 
+export function assertSessionConfigured() {
+  secret();
+}
+
 export async function createSession(userId: string) {
   const token = await new SignJWT({ sub: userId })
     .setProtectedHeader({ alg: "HS256" })
