@@ -6,7 +6,7 @@ A creative writing studio: manuscript editor with autosave and version history, 
 
 ## Run locally
 1. `cp .env.example .env.local` and fill in `DATABASE_URL` and `AUTH_SECRET`.
-2. Create the tables: run the SQL in `drizzle/0000_init.sql` in your Postgres (Neon: SQL Editor).
+2. Create the tables: run the SQL in `drizzle/0000_init.sql` in your Postgres (Supabase or Neon: SQL Editor).
 3. `npm install && npm run dev`
 
 ## Tests
