@@ -74,3 +74,23 @@ export const messages = pgTable("messages", {
   content: text("content").notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 }, (t) => [index("messages_project_idx").on(t.projectId, t.createdAt)]);
+
+// Idea Lab results. `result` is the structured AI output; `input` is the writer's original text, kept verbatim.
+export const ideas = pgTable("ideas", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  projectId: uuid("project_id").references(() => projects.id, { onDelete: "set null" }),
+  kind: text("kind").notNull(), // idea | characters | plot | chapters
+  input: text("input").notNull(),
+  result: jsonb("result").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [index("ideas_user_idx").on(t.userId, t.createdAt)]);
+
+export const savedPrompts = pgTable("saved_prompts", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  projectId: uuid("project_id").references(() => projects.id, { onDelete: "set null" }),
+  title: text("title").notNull(),
+  body: text("body").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [index("prompts_user_idx").on(t.userId, t.createdAt)]);

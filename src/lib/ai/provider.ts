@@ -69,6 +69,12 @@ async function groq(i: GenInput): Promise<string> {
 
 /** Deterministic stand-in used only by tests (AI_PROVIDER=mock). Never selected automatically. */
 function mock(i: GenInput): string {
+  const kind = i.system.match(/KIND:(\w+)/)?.[1];
+  if (kind === "idea") return "Here you go:\n```json\n" + JSON.stringify({ refined: "A refined version of the idea.", directions: [{ title: "Direction A", summary: "A." }, { title: "Direction B", summary: "B." }, { title: "Direction C", summary: "C." }], weaknesses: ["The stakes are vague."], opportunities: ["Deepen the rivalry."], questions: ["Who is the narrator?"] }) + "\n```";
+  if (kind === "characters") return JSON.stringify({ characters: [{ name: "Mock Name", role: "Lead", motivation: "Wants to belong.", conflict: "Fears being found out.", relationships: "Estranged sister.", arc: "Learns to trust." }] });
+  if (kind === "plot") return JSON.stringify({ conflicts: ["Duty versus desire."], subplots: [{ title: "The letter", summary: "A hidden letter surfaces." }], arc: ["Setup", "Turn", "Resolution"], twists: [{ title: "The witness", summary: "Someone saw everything." }], themes: ["Loyalty"] });
+  if (kind === "chapters") return JSON.stringify({ chapters: [{ title: "Chapter 1", summary: "The meeting." }, { title: "Chapter 2", summary: "The secret." }] });
+  if (kind === "promptfields") return JSON.stringify({ context: "Inferred context.", objective: "Inferred objective.", tone: "Tender", pacing: "Slow" });
   const last = i.messages[i.messages.length - 1]?.content ?? "";
   const m = last.match(/ABOUT (\d+) WORDS/);
   if (m) return Array.from({ length: Math.ceil(Number(m[1]) / 5) }, (_, k) => `Mock sentence ${k + 1} here.`).join(" ");

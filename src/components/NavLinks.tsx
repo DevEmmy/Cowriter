@@ -5,8 +5,8 @@ import { usePathname } from "next/navigation";
 // Only features that exist are links. The rest are listed so the roadmap is visible, but cannot be opened.
 const items: Array<[string, string | null]> = [
   ["Dashboard", "/dashboard"], ["My Projects", "/projects"], ["Writing Studio", "/projects"],
-  ["Talk to Co Writer", "/projects"], ["Idea Lab", null], ["Story Guard", null], ["Story Bible", null],
-  ["Chapter Analyser", null], ["Cover Studio", null], ["My Writing Voice", "/voice"], ["Writing Tools", null],
+  ["Talk to Co Writer", "/projects"], ["Idea Lab", "/ideas"], ["Story Guard", null], ["Story Bible", null],
+  ["Chapter Analyser", null], ["Cover Studio", null], ["My Writing Voice", "/voice"], ["Writing Tools", "/tools"],
   ["Writing Analytics", null], ["My Library", null], ["Settings", "/settings"],
 ];
 
