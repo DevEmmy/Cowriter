@@ -1,0 +1,11 @@
+import { normalizeCa } from "../src/lib/db";
+import assert from "node:assert";
+const body = "MIIDxDCCAqygAwIBAgIUbLxMod62P2ktCiAkxnKJwtE9VPYwDQYJKoZIhvcNAQEL";
+const pem = `-----BEGIN CERTIFICATE-----\n${body}\n-----END CERTIFICATE-----\n`;
+assert.equal(normalizeCa(pem), pem);
+assert.equal(normalizeCa(pem.replace(/\n/g, "\\n")), pem);
+assert.equal(normalizeCa(pem.replace(/\n/g, "\r\n")), pem);
+assert.equal(normalizeCa(`"${pem.trim()}"`), pem);
+assert.equal(normalizeCa(pem.trim().replace(/\n/g, " ")), pem);
+assert.equal(normalizeCa("  "), undefined);
+console.log("ca ok");

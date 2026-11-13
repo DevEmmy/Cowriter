@@ -13,6 +13,18 @@ let _db: Db | null = null;
  * Remote connections always use TLS with certificate verification. If your provider signs with its
  * own certificate authority, set DATABASE_CA to that CA certificate (PEM text).
  */
+/** Accepts the certificate pasted with real line breaks, with literal \\n, with quotes, or with Windows line endings. */
+export function normalizeCa(raw: string | undefined): string | undefined {
+  if (!raw?.trim()) return undefined;
+  let t = raw.trim().replace(/^["']|["']$/g, "").replace(/\\r/g, "").replace(/\\n/g, "\n").replace(/\r\n?/g, "\n");
+  if (!t.includes("\n")) t = t.replace(/(-----BEGIN CERTIFICATE-----)\s*/, "$1\n").replace(/\s*(-----END CERTIFICATE-----)/, "\n$1").replace(/ (?=[A-Za-z0-9+/=]{20})/g, "\n");
+  return t.endsWith("\n") ? t : t + "\n";
+}
+export function caStatus(raw = process.env.DATABASE_CA): string {
+  const ca = normalizeCa(raw);
+  return ca ? `DATABASE_CA is set (${(ca.match(/-----BEGIN CERTIFICATE-----/g) ?? []).length} certificate found)` : "DATABASE_CA is not set";
+}
+
 export function db(): Db {
   if (_db) return _db;
   const url = process.env.DATABASE_URL;
@@ -22,7 +34,7 @@ export function db(): Db {
     _db = drizzleNeon(neon(url), { schema });
   } else {
     const local = host === "localhost" || host === "127.0.0.1";
-    const ca = process.env.DATABASE_CA?.replace(/\\n/g, "\n");
+    const ca = normalizeCa(process.env.DATABASE_CA);
     const pool = new Pool({ connectionString: url, max: 1, ssl: local ? undefined : ca ? { ca } : true });
     _db = drizzlePg(pool, { schema }) as unknown as Db;
   }
