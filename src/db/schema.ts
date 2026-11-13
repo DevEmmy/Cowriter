@@ -34,7 +34,7 @@ export const documents = pgTable(
     filename: text("filename").notNull(),
     mime: text("mime").notNull(),
     size: integer("size").notNull(),
-    blobUrl: text("blob_url").notNull(),
+    blobKey: text("blob_key").notNull(),
     contentHash: text("content_hash").notNull(),
     // Extracted structured content units (cached; never re-extracted)
     extracted: jsonb("extracted"),
