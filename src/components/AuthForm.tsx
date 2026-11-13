@@ -14,19 +14,24 @@ export default function AuthForm({ mode }: { mode: "login" | "signup" }) {
     setBusy(true);
     setError("");
     const f = new FormData(e.currentTarget);
-    const res = await fetch(`/api/auth/${mode}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(Object.fromEntries(f)),
-    });
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok) {
-      setError(data.error ?? "Something went wrong. Please try again.");
+    try {
+      const res = await fetch(`/api/auth/${mode}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(Object.fromEntries(f)),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setError(data.error ?? "Account services are temporarily unavailable. Please try again shortly.");
+        return;
+      }
+      router.push("/dashboard");
+      router.refresh();
+    } catch {
+      setError("Unable to connect. Check your internet connection and try again.");
+    } finally {
       setBusy(false);
-      return;
     }
-    router.push("/dashboard");
-    router.refresh();
   }
 
   const input = "w-full rounded-lg border border-slate-300 px-3.5 py-2.5 text-sm outline-none focus:border-electric focus:ring-2 focus:ring-electric/20";
