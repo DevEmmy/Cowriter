@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireUserId } from "@/lib/auth";
+import { setupHint } from "@/lib/diagnose";
 
 type Ctx<P> = { params: Promise<P> };
 /** Wraps a route handler: authenticates, converts thrown Responses and errors into JSON. */
@@ -11,7 +12,7 @@ export function authed<P = Record<string, never>>(fn: (userId: string, req: Requ
     } catch (e) {
       if (e instanceof Response) return e;
       console.error(e);
-      return NextResponse.json({ error: "Something went wrong. Please try again." }, { status: 500 });
+      return NextResponse.json({ error: setupHint(e) ?? "Something went wrong. Please try again." }, { status: 500 });
     }
   };
 }

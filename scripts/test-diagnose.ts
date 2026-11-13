@@ -1,0 +1,12 @@
+import { setupHint } from "../src/lib/diagnose";
+import assert from "node:assert";
+const h = (m: string, code?: string, wrap = false) => setupHint(wrap ? new Error("Failed query", { cause: Object.assign(new Error(m), { code }) }) : Object.assign(new Error(m), { code }));
+assert.match(h("self-signed certificate in certificate chain", undefined, true)!, /DATABASE_CA/);
+assert.match(h("password authentication failed for user", "28P01", true)!, /password/);
+assert.match(h('relation "users" does not exist', "42P01", true)!, /supabase-setup/);
+assert.match(h("getaddrinfo ENOTFOUND db.x", "ENOTFOUND")!, /reach the database/);
+assert.match(h("DATABASE_URL is not set")!, /not set/);
+assert.match(h("AUTH_SECRET must be set (32+ chars)")!, /AUTH_SECRET/);
+assert.equal(h("something unrelated"), null);
+assert.ok(!(h("password authentication failed", "28P01")!).includes("postgres://"));
+console.log("diagnose ok");

@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import { eq } from "drizzle-orm";
 import { db, schema } from "@/lib/db";
 import { createSession } from "@/lib/auth";
+import { setupHint } from "@/lib/diagnose";
 
 const Body = z.object({
   name: z.string().trim().max(80).default(""),
@@ -12,6 +13,15 @@ const Body = z.object({
 });
 
 export async function POST(req: Request) {
+  try {
+    return await handle(req);
+  } catch (e) {
+    console.error(e);
+    return NextResponse.json({ error: setupHint(e) ?? "Something went wrong. Please try again." }, { status: 500 });
+  }
+}
+
+async function handle(req: Request) {
   const parsed = Body.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: "Enter a valid email and a password of 8+ characters." }, { status: 400 });
   const { name, email, password } = parsed.data;
