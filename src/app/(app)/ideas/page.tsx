@@ -11,7 +11,7 @@ export default async function Ideas() {
   return (
     <div className="mx-auto max-w-4xl">
       <h1 className="text-2xl font-bold">Idea Lab</h1>
-      <p className="mt-1 text-ink/70">Bring a rough idea. Co Writer offers suggestions you can take or leave. Your story stays yours.</p>
+      <p className="mt-1 text-muted">Bring a rough idea. Co Writer offers suggestions you can take or leave. Your story stays yours.</p>
       <IdeaLab projects={projects} />
     </div>
   );

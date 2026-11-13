@@ -37,7 +37,7 @@ export default function NewProject({ label = "Start Writing" }: { label?: string
             </label>
             {error && <p role="alert" className="rounded-lg bg-red-50 p-2.5 text-sm text-red-700">{error}</p>}
             <div className="flex justify-end gap-3">
-              <button type="button" disabled={busy} onClick={() => setOpen(false)} className="rounded-xl px-4 py-2 text-sm text-ink/70 hover:bg-lavender">Cancel</button>
+              <button type="button" disabled={busy} onClick={() => setOpen(false)} className="rounded-xl px-4 py-2 text-sm text-muted hover:bg-lavender">Cancel</button>
               <button disabled={busy || !title.trim()} className="rounded-xl bg-electric px-5 py-2 text-sm font-semibold text-white hover:bg-electric-dark disabled:opacity-50">{busy ? "Creating…" : "Create and write"}</button>
             </div>
           </form>

@@ -52,13 +52,13 @@ export default function PromptTool() {
           <button onClick={copy} className="rounded-full bg-electric px-4 py-1.5 text-sm font-semibold text-white">Copy</button>
           <input aria-label="Prompt title" placeholder="Title to save under" value={title} onChange={(e) => setTitle(e.target.value)} className="rounded-xl border border-lavender p-1.5 text-sm" />
           <button onClick={save} disabled={!title.trim()} className="rounded-full bg-lavender px-4 py-1.5 text-sm font-semibold text-electric disabled:opacity-50">Save</button>
-          <span role="status" className="text-sm text-ink/70">{msg}</span>
+          <span role="status" className="text-sm text-muted">{msg}</span>
         </div></section>}
       {saved.length > 0 && <section><h2 className="text-lg font-bold">Saved prompts</h2>
         <ul className="mt-3 space-y-2">{saved.map((s) => (
           <li key={s.id} className="flex items-center justify-between gap-3 rounded-xl bg-white p-3 shadow-sm">
             <button onClick={() => setOut(s.body)} className="min-w-0 flex-1 truncate text-left text-sm font-medium">{s.title}</button>
-            <button onClick={() => del(s.id)} aria-label={`Delete ${s.title}`} className="text-sm text-ink/50 hover:text-red-600">Delete</button>
+            <button onClick={() => del(s.id)} aria-label={`Delete ${s.title}`} className="text-sm text-muted hover:text-red-600">Delete</button>
           </li>))}</ul></section>}
     </div>
   );

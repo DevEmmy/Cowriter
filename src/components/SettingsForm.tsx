@@ -16,7 +16,7 @@ export default function SettingsForm({ name, dailyGoal, email }: { name: string;
   const input = "mt-1 w-full rounded-xl border border-lavender bg-white px-3.5 py-2.5 outline-none focus:border-electric";
   return (
     <form onSubmit={save} className="mt-6 space-y-4 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-lavender">
-      <p className="text-sm text-ink/60">Signed in as {email}</p>
+      <p className="text-sm text-muted">Signed in as {email}</p>
       <label className="block text-sm font-medium">Name<input name="name" defaultValue={name} maxLength={80} className={input} /></label>
       <label className="block text-sm font-medium">Daily word goal<input name="goal" type="number" min={50} max={50000} defaultValue={dailyGoal} className={input} /></label>
       {msg && <p role="status" className={`text-sm ${msg.ok ? "text-green-700" : "text-red-700"}`}>{msg.text}</p>}

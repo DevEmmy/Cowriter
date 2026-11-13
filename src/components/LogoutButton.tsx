@@ -5,7 +5,7 @@ export default function LogoutButton() {
   return (
     <button
       onClick={async () => { await fetch("/api/auth/logout", { method: "POST" }); router.push("/"); router.refresh(); }}
-      className="text-sm text-slate-600 hover:text-slate-900"
+      className="btn btn-secondary mt-2 w-full"
     >Log out</button>
   );
 }

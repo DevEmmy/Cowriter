@@ -12,6 +12,11 @@
   --color-sky: #6f8fe8;
   --color-cream: #fffaf6;
   --color-ink: #1f1637;
+  --color-muted: #574d70;      /* 7.6:1 on white: body-safe secondary text */
+  --color-line: #e3dbf5;
+  --color-success: #0b7a5b;
+  --color-danger: #b42318;
+  --color-warn: #8a5a00;
 }
 
 body { background: var(--color-cream); color: var(--color-ink); font-family: var(--font-sans), system-ui, sans-serif; }
@@ -27,3 +32,27 @@ body { background: var(--color-cream); color: var(--color-ink); font-family: var
 .manuscript .ProseMirror ul { list-style: disc; padding-left: 1.5em; margin: 0 0 1em; }
 .manuscript .ProseMirror ol { list-style: decimal; padding-left: 1.5em; margin: 0 0 1em; }
 .manuscript .ProseMirror p.is-editor-empty:first-child::before { content: attr(data-placeholder); color: #9a90b5; float: left; height: 0; pointer-events: none; }
+
+/* ---------- Interaction foundations (HCI) ---------- */
+html { scroll-behavior: smooth; }
+:focus-visible { outline: 3px solid var(--color-electric); outline-offset: 2px; border-radius: 6px; }
+.skip-link { position: absolute; left: 8px; top: -60px; z-index: 100; background: var(--color-deep); color: #fff; padding: 10px 16px; border-radius: 10px; }
+.skip-link:focus { top: 8px; }
+/* Thumb-friendly: any touch device gets 44px minimum targets (WCAG 2.5.5 / Apple HIG). */
+@media (pointer: coarse) {
+  button, select, [role="tab"], summary, input:not([type="checkbox"]):not([type="radio"]) { min-height: 44px; }
+  select, input, textarea { font-size: 16px; } /* stops iOS zoom-on-focus */
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; } }
+.pb-safe { padding-bottom: max(env(safe-area-inset-bottom), 0px); }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; min-height: 44px; padding: 0 1.25rem; border-radius: 9999px; font-weight: 600; font-size: .9rem; transition: background-color .15s, box-shadow .15s; cursor: pointer; }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.btn-primary { background: var(--color-electric); color: #fff; box-shadow: 0 1px 2px rgb(42 15 92 / .25); }
+.btn-primary:hover:not(:disabled) { background: var(--color-electric-dark); }
+.btn-secondary { background: var(--color-lavender); color: var(--color-electric-dark); }
+.btn-secondary:hover:not(:disabled) { background: #e3d9ff; }
+.btn-danger { background: #fff; color: var(--color-danger); box-shadow: inset 0 0 0 1.5px var(--color-danger); }
+.field { width: 100%; border: 1.5px solid var(--color-line); border-radius: 14px; background: #fff; padding: .65rem .85rem; min-height: 44px; }
+.field:focus { border-color: var(--color-electric); outline: none; box-shadow: 0 0 0 3px rgb(124 58 237 / .2); }
+.card { background: #fff; border-radius: 20px; padding: 1.25rem; box-shadow: 0 1px 2px rgb(42 15 92 / .06); border: 1px solid var(--color-line); }
+.msg-ok { color: var(--color-success); } .msg-err { color: var(--color-danger); }

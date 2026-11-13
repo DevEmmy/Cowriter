@@ -8,6 +8,7 @@ import { generate } from "@/lib/ai/provider";
 import { finish, loadVoice, systemPrompt } from "@/lib/ai/prompts";
 import { htmlToText } from "@/lib/words";
 import { guard } from "@/lib/ai/run";
+import { storyContext } from "@/lib/ai/story";
 
 export const maxDuration = 26;
 const HISTORY = 16;
@@ -36,8 +37,10 @@ export const POST = authed<{ id: string }>(async (userId, req, { id }) => {
   const voice = await loadVoice(userId, id);
   const chapters = await chaptersOf(id);
   const body = chapter ? htmlToText(chapter.content).replace(/\s+/g, " ").trim().split(" ").slice(0, 9000).join(" ") : "";
+  const story = await storyContext(id, chapter?.id);
   const context = [
     `Project: "${proj.title}" (${proj.type.replace("_", " ")}). Chapters: ${chapters.map((c) => `${c.title} (${c.wordCount} words)`).join("; ")}.`,
+    story,
     chapter && `The writer is working on "${chapter.title}". Its current text follows between the markers.\n<<<CHAPTER\n${body}\nCHAPTER>>>`,
     p.data.selection && `The writer has selected this passage:\n<<<SELECTION\n${p.data.selection}\nSELECTION>>>`,
     "Only chapter text you can see above counts as established story. Treat your own earlier suggestions as suggestions, not as facts. When you propose rewritten text, make clear it is a suggestion; the writer decides what to use. Be conversational and concise unless asked for prose.",

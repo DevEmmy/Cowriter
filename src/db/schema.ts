@@ -94,3 +94,39 @@ export const savedPrompts = pgTable("saved_prompts", {
   body: text("body").notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 }, (t) => [index("prompts_user_idx").on(t.userId, t.createdAt)]);
+
+// Story Bible: what the writer has established. Entries are the writer's own words; AI only suggests, never writes here uninvited.
+export const bibleEntries = pgTable("bible_entries", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  projectId: uuid("project_id").notNull().references(() => projects.id, { onDelete: "cascade" }),
+  kind: text("kind").notNull(), // character | location | timeline | rule | note
+  name: text("name").notNull(),
+  body: text("body").notNull().default(""),
+  position: integer("position").notNull().default(0),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [index("bible_project_idx").on(t.projectId, t.kind, t.position)]);
+
+// Persistent manuscript memory: a summary and key facts per chapter, rebuilt only when the chapter text changes (contentHash).
+export const chapterMemory = pgTable("chapter_memory", {
+  chapterId: uuid("chapter_id").primaryKey().references(() => chapters.id, { onDelete: "cascade" }),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  projectId: uuid("project_id").notNull().references(() => projects.id, { onDelete: "cascade" }),
+  summary: text("summary").notNull(),
+  facts: jsonb("facts").notNull(),
+  basic: boolean("basic").notNull().default(false), // true when built without AI (extract only)
+  contentHash: text("content_hash").notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [index("memory_project_idx").on(t.projectId)]);
+
+// Story Guard results. `issues` are suggestions with a verbatim quote from the chapter; the manuscript is never edited.
+export const guardReports = pgTable("guard_reports", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  projectId: uuid("project_id").notNull().references(() => projects.id, { onDelete: "cascade" }),
+  chapterId: uuid("chapter_id").references(() => chapters.id, { onDelete: "cascade" }),
+  issues: jsonb("issues").notNull(),
+  usedAi: boolean("used_ai").notNull().default(false),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [index("guard_chapter_idx").on(t.chapterId, t.createdAt)]);

@@ -44,7 +44,7 @@ export default function VoiceForm({ projects }: { projects: Array<{ id: string; 
           {projects.map((p) => <option key={p.id} value={p.id}>Only: {p.title}</option>)}
         </select>
       </label>
-      <label className="block text-sm font-medium">Writing samples <span className="font-normal text-ink/60">({words.toLocaleString()} words, at least 150 recommended)</span>
+      <label className="block text-sm font-medium">Writing samples <span className="font-normal text-muted">({words.toLocaleString()} words, at least 150 recommended)</span>
         <textarea value={samples} onChange={(e) => setSamples(e.target.value)} rows={10} placeholder="Paste a few pages of your own writing here." className={field} />
       </label>
       <div>
@@ -60,7 +60,7 @@ export default function VoiceForm({ projects }: { projects: Array<{ id: string; 
       {analysis?.summary && (
         <section className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-lavender">
           <h2 className="font-semibold">Your voice profile</h2>
-          <p className="mt-2 whitespace-pre-line text-sm leading-6 text-ink/80">{analysis.summary}</p>
+          <p className="mt-2 whitespace-pre-line text-sm leading-6 text-ink">{analysis.summary}</p>
         </section>
       )}
     </div>

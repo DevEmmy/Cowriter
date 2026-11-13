@@ -74,6 +74,12 @@ function mock(i: GenInput): string {
   if (kind === "characters") return JSON.stringify({ characters: [{ name: "Mock Name", role: "Lead", motivation: "Wants to belong.", conflict: "Fears being found out.", relationships: "Estranged sister.", arc: "Learns to trust." }] });
   if (kind === "plot") return JSON.stringify({ conflicts: ["Duty versus desire."], subplots: [{ title: "The letter", summary: "A hidden letter surfaces." }], arc: ["Setup", "Turn", "Resolution"], twists: [{ title: "The witness", summary: "Someone saw everything." }], themes: ["Loyalty"] });
   if (kind === "chapters") return JSON.stringify({ chapters: [{ title: "Chapter 1", summary: "The meeting." }, { title: "Chapter 2", summary: "The secret." }] });
+  if (kind === "memory") return JSON.stringify({ summary: "Mock summary of the chapter.", facts: ["Mock fact one."] });
+  if (kind === "biblesuggest") return JSON.stringify({ suggestions: [{ kind: "character", name: "Mock Character", body: "Appears in chapter one." }, { kind: "location", name: "Mock Harbour", body: "Where the story opens." }] });
+  if (kind === "guard") {
+    const t = i.messages.at(-1)?.content.split("CHAPTER TEXT:\n")[1] ?? "";
+    return JSON.stringify({ issues: [{ severity: "high", category: "character", quote: t.slice(0, 40), problem: "Mock continuity problem.", reference: "Story Bible" }, { severity: "low", category: "fact", quote: "This sentence is not in the chapter at all.", problem: "Invented.", reference: "nowhere" }] });
+  }
   if (kind === "promptfields") return JSON.stringify({ context: "Inferred context.", objective: "Inferred objective.", tone: "Tender", pacing: "Slow" });
   const last = i.messages[i.messages.length - 1]?.content ?? "";
   const m = last.match(/ABOUT (\d+) WORDS/);

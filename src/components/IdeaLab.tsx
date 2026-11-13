@@ -29,7 +29,7 @@ function Result({ kind, r }: { kind: string; r: Record<string, any> }) { // esli
     <Sec label="Opportunities"><List items={r.opportunities} /></Sec>
     <Sec label="Questions for you"><List items={r.questions} /></Sec></>;
   if (kind === "characters") return <>{r.characters.map((c: Record<string, string>, i: number) => (
-    <div key={i} className="mt-4 rounded-xl bg-cream p-4"><h4 className="font-bold">{c.name} <span className="text-sm font-normal text-ink/60">{c.role}</span></h4>
+    <div key={i} className="mt-4 rounded-xl bg-cream p-4"><h4 className="font-bold">{c.name} <span className="text-sm font-normal text-muted">{c.role}</span></h4>
       <p className="mt-2"><b>Motivation:</b> {c.motivation}</p><p><b>Conflict:</b> {c.conflict}</p><p><b>Relationships:</b> {c.relationships}</p><p><b>Possible arc:</b> {c.arc}</p></div>))}</>;
   if (kind === "plot") return <>
     <Sec label="Conflicts"><List items={r.conflicts} /></Sec><Sec label="Subplots"><Titled items={r.subplots} /></Sec>
@@ -76,7 +76,7 @@ export default function IdeaLab({ projects }: { projects: Proj[] }) {
       </div>
 
       {cur && <article aria-label="Result" className="mt-6 rounded-2xl bg-white p-5 shadow-sm">
-        <p className="text-xs text-ink/60">Suggestions only. Nothing here changes your manuscript.</p>
+        <p className="text-xs text-muted">Suggestions only. Nothing here changes your manuscript.</p>
         <Result kind={cur.kind} r={cur.result} />
       </article>}
 
@@ -84,7 +84,7 @@ export default function IdeaLab({ projects }: { projects: Proj[] }) {
         <ul className="mt-3 space-y-2">{hist.map((h) => (
           <li key={h.id} className="flex items-center justify-between gap-3 rounded-xl bg-white p-3 shadow-sm">
             <button onClick={() => setCur(h)} className="min-w-0 flex-1 truncate text-left text-sm"><span className="mr-2 rounded-full bg-lavender px-2 py-0.5 text-xs text-electric">{TABS.find((t) => t[0] === h.kind)?.[1] ?? h.kind}</span>{h.input}</button>
-            <button onClick={() => del(h.id)} aria-label="Delete idea" className="text-sm text-ink/50 hover:text-red-600">Delete</button>
+            <button onClick={() => del(h.id)} aria-label="Delete idea" className="text-sm text-muted hover:text-red-600">Delete</button>
           </li>))}</ul></section>}
     </div>
   );

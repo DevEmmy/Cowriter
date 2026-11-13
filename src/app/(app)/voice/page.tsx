@@ -11,7 +11,7 @@ export default async function Voice() {
   return (
     <div className="mx-auto max-w-3xl">
       <h1 className="text-2xl font-bold">My Writing Voice</h1>
-      <p className="mt-1 text-ink/70">Paste samples of your own writing and set your standing rules. Co Writer follows them whenever it chats, improves or expands your text.</p>
+      <p className="mt-1 text-muted">Paste samples of your own writing and set your standing rules. Co Writer follows them whenever it chats, improves or expands your text.</p>
       <VoiceForm projects={projects} />
     </div>
   );

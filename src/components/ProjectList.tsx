@@ -30,9 +30,9 @@ export default function ProjectList({ projects }: { projects: P[] }) {
   }
 
   const tabBtn = (k: typeof tab, l: string) => (
-    <button onClick={() => setTab(k)} aria-pressed={tab === k} className={`rounded-full px-4 py-1.5 text-sm ${tab === k ? "bg-electric text-white" : "bg-white text-ink/70 ring-1 ring-lavender hover:bg-lavender"}`}>{l}</button>
+    <button onClick={() => setTab(k)} aria-pressed={tab === k} className={`rounded-full px-4 py-1.5 text-sm ${tab === k ? "bg-electric text-white" : "bg-white text-muted ring-1 ring-lavender hover:bg-lavender"}`}>{l}</button>
   );
-  const act = "rounded-lg px-2.5 py-1 text-xs text-ink/70 hover:bg-lavender";
+  const act = "rounded-lg px-2.5 py-1 text-xs text-muted hover:bg-lavender";
   return (
     <div>
       <div className="mb-5 flex flex-wrap items-center gap-2">
@@ -41,15 +41,15 @@ export default function ProjectList({ projects }: { projects: P[] }) {
       </div>
       {err && <p role="alert" className="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-700">{err}</p>}
       {shown.length === 0 ? (
-        <p className="rounded-2xl border border-dashed border-electric/30 bg-white p-10 text-center text-ink/60">{projects.length === 0 ? "Nothing here yet. Create your first project to begin." : "No projects match."}</p>
+        <p className="rounded-2xl border border-dashed border-electric/30 bg-white p-10 text-center text-muted">{projects.length === 0 ? "Nothing here yet. Create your first project to begin." : "No projects match."}</p>
       ) : (
         <ul className="space-y-3">
           {shown.map((p) => (
             <li key={p.id} className="flex flex-wrap items-center gap-3 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-lavender">
-              <button onClick={() => patch(p.id, { favorite: !p.favorite })} aria-label={p.favorite ? "Remove from favourites" : "Add to favourites"} aria-pressed={p.favorite} className={`text-xl ${p.favorite ? "text-coral" : "text-ink/25 hover:text-coral"}`}>★</button>
+              <button onClick={() => patch(p.id, { favorite: !p.favorite })} aria-label={p.favorite ? "Remove from favourites" : "Add to favourites"} aria-pressed={p.favorite} className={`grid h-11 w-11 place-items-center text-xl ${p.favorite ? "text-coral" : "text-muted hover:text-coral"}`}>★</button>
               <Link href={`/studio/${p.id}`} className="min-w-0 flex-1">
                 <p className="truncate font-semibold">{p.title}</p>
-                <p className="text-sm capitalize text-ink/60">{p.type.replace("_", " ")} · {p.chapters} chapter{p.chapters === 1 ? "" : "s"} · {p.words.toLocaleString()} words</p>
+                <p className="text-sm capitalize text-muted">{p.type.replace("_", " ")} · {p.chapters} chapter{p.chapters === 1 ? "" : "s"} · {p.words.toLocaleString()} words</p>
               </Link>
               <div className="flex gap-1">
                 <button className={act} onClick={() => rename(p)}>Rename</button>

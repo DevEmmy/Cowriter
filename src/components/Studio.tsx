@@ -18,7 +18,7 @@ const FONTS: Array<[string, string]> = [["Default", ""], ["Serif", "Georgia, ser
 const SIZES = ["14px", "16px", "18px", "20px", "24px", "28px"];
 const draftKey = (id: string) => `cowriter-draft-${id}`;
 
-export default function Studio({ project, chapters, chapter }: { project: { id: string; title: string; type: string }; chapters: Ch[]; chapter: Current | null }) {
+export default function Studio({ project, chapters, chapter, openAi = false }: { project: { id: string; title: string; type: string }; chapters: Ch[]; chapter: Current | null; openAi?: boolean }) {
   const router = useRouter();
   const [list, setList] = useState(chapters);
   const [title, setTitle] = useState(chapter?.title ?? "");
@@ -29,7 +29,7 @@ export default function Studio({ project, chapters, chapter }: { project: { id: 
   const [chars, setChars] = useState(0);
   const [dark, setDark] = useState(false);
   const [focus, setFocus] = useState(false);
-  const [panel, setPanel] = useState<"none" | "history" | "find" | "ai">("none");
+  const [panel, setPanel] = useState<"none" | "history" | "find" | "ai">(openAi ? "ai" : "none");
   const [recovered, setRecovered] = useState<string | null>(null);
 
   const rev = useRef(chapter?.revision ?? 1);
@@ -152,18 +152,21 @@ export default function Studio({ project, chapters, chapter }: { project: { id: 
   );
 
   return (
-    <div className={`flex min-h-screen flex-col ${bg}`}>
+    <div className={`flex min-h-screen flex-col pb-20 md:pb-0 ${bg}`}>
       <header className={`flex flex-wrap items-center gap-3 border-b px-4 py-2.5 ${panelBg}`}>
         <Link href="/projects" className="text-sm opacity-70 hover:opacity-100">← Projects</Link>
         <span className="font-semibold">{project.title}</span>
         <StatusPill status={status} savedAt={savedAt} errMsg={errMsg} />
         <div className="ml-auto flex flex-wrap items-center gap-1 text-sm">
           <span className="mr-2 opacity-70" aria-live="polite">{words.toLocaleString()} words · {chars.toLocaleString()} characters</span>
-          <Btn onClick={() => setPanel(panel === "ai" ? "none" : "ai")} on={panel === "ai"}>AI</Btn>
-          <Btn onClick={() => setPanel(panel === "find" ? "none" : "find")} on={panel === "find"}>Find</Btn>
-          <Btn onClick={() => setPanel(panel === "history" ? "none" : "history")} on={panel === "history"}>History</Btn>
+          <span className="hidden items-center gap-1 md:flex">
+            <Btn onClick={() => setPanel(panel === "ai" ? "none" : "ai")} on={panel === "ai"}>AI</Btn>
+            <Btn onClick={() => setPanel(panel === "find" ? "none" : "find")} on={panel === "find"}>Find</Btn>
+            <Btn onClick={() => setPanel(panel === "history" ? "none" : "history")} on={panel === "history"}>History</Btn>
+            <ToolLinks projectId={project.id} chapterId={chapter.id} />
+          </span>
           <Btn onClick={() => { const v = !dark; setDark(v); try { localStorage.setItem("cowriter-dark", v ? "1" : "0"); } catch {} }}>{dark ? "Light" : "Dark"}</Btn>
-          <Btn on={focus} onClick={() => { const v = !focus; setFocus(v); if (v) document.documentElement.requestFullscreen?.().catch(() => {}); else if (document.fullscreenElement) document.exitFullscreen(); }}>{focus ? "Exit full screen" : "Full screen"}</Btn>
+          <span className="hidden md:inline"><Btn on={focus} onClick={() => { const v = !focus; setFocus(v); if (v) document.documentElement.requestFullscreen?.().catch(() => {}); else if (document.fullscreenElement) document.exitFullscreen(); }}>{focus ? "Exit full screen" : "Full screen"}</Btn></span>
         </div>
       </header>
 
@@ -215,7 +218,26 @@ export default function Studio({ project, chapters, chapter }: { project: { id: 
         {panel === "ai" && editor && <AiPanel editor={editor} projectId={project.id} chapterId={chapter.id} panelBg={panelBg} dark={dark} onChanged={() => markDirty(editor.getHTML())} />}
         {panel === "find" && editor && <Find editor={editor} panelBg={panelBg} />}
       </div>
+      <nav aria-label="Studio actions" className={`pb-safe fixed inset-x-0 bottom-0 z-30 border-t md:hidden ${panelBg}`}>
+        <ul className="mx-auto grid max-w-lg grid-cols-4">
+          {([["AI", "ai"], ["Find", "find"], ["History", "history"]] as const).map(([l, k]) => (
+            <li key={k}><button onClick={() => setPanel(panel === k ? "none" : k)} aria-pressed={panel === k} className={`min-h-14 w-full text-sm font-medium ${panel === k ? "text-electric" : ""}`}>{l}</button></li>))}
+          <li className="relative"><ToolLinks projectId={project.id} chapterId={chapter.id} up /></li>
+        </ul>
+      </nav>
     </div>
+  );
+}
+
+function ToolLinks({ projectId, chapterId, up }: { projectId: string; chapterId: string; up?: boolean }) {
+  const links: Array<[string, string]> = [["Story Bible", `/bible?project=${projectId}`], ["Story Guard", `/guard?project=${projectId}&chapter=${chapterId}`], ["Chapter Analyser", `/analyser?project=${projectId}&chapter=${chapterId}`], ["Export", `/library?project=${projectId}`], ["Dashboard", "/dashboard"]];
+  return (
+    <details className="relative">
+      <summary className={`flex cursor-pointer list-none items-center justify-center rounded-lg px-3 ${up ? "min-h-14 text-sm font-medium" : "py-1.5 hover:bg-electric/10"}`}>Tools</summary>
+      <ul className={`absolute right-0 z-40 w-52 rounded-xl border border-line bg-white p-1 text-ink shadow-xl ${up ? "bottom-full mb-2" : "top-full mt-1"}`}>
+        {links.map(([l, h]) => <li key={l}><Link href={h} className="flex min-h-11 items-center rounded-lg px-3 text-sm hover:bg-lavender">{l}</Link></li>)}
+      </ul>
+    </details>
   );
 }
 
