@@ -4,7 +4,7 @@ Your Ideas. Your Voice. A Better Story.
 
 A creative writing studio with a real backend:
 
-- **Write**: manuscript editor with autosave, version history, projects, goals and streaks.
+- **Write**: import an existing manuscript (.docx, .pdf, .txt, .md or pasted text, split into chapters with a preview), manuscript editor with autosave, version history, projects, goals and streaks.
 - **AI partner**: chat, improve a selection, chapter expansion, My Writing Voice, prose check. Every AI result is a suggestion; nothing edits your manuscript on its own.
 - **Create**: Idea Lab (ideas, characters, plot, chapter breakdowns), prompt builder, Cover Studio (PNG and SVG download).
 - **Refine**: Story Bible, manuscript memory, Story Guard (continuity checks with verified quotes), Chapter Analyser, optional third-party AI-detector checks, Writing Analytics.
@@ -24,7 +24,7 @@ A creative writing studio with a real backend:
 ## Tests
 - Local Postgres for tests: `scripts/pg-start.sh`. AI tests run with `AI_PROVIDER=mock`. Run UI tests against `npm run build && npm start`.
 - Unit: `test-ai-unit.ts`, `test-provider.ts`, `test-json.ts`, `test-diagnose.ts`, `test-ca.ts`, `test-stage4-unit.ts`, `test-export-unit.ts`, `test-cover-unit.ts`
-- API: `test-http.sh`, `test-ai-http.sh`, `test-stage3.sh`, `test-stage4.sh`, `test-stage5.sh` (needs `scripts/fake-detector.mjs` and the detector env vars shown in that script)
+- API: `test-http.sh`, `test-ai-http.sh`, `test-stage3.sh`, `test-stage4.sh`, `test-import.mjs` (import API+UI), `test-stage5.sh` (needs `scripts/fake-detector.mjs` and the detector env vars shown in that script)
 - Browser (Chrome): `test-ui.mjs`, `test-ai-ui.mjs`, `test-stage3-ui.mjs`, `test-stage4-ui.mjs` (includes phone layout), `test-stage5-ui.mjs`
 
 ## Deploy (Netlify)

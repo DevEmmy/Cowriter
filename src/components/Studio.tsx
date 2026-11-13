@@ -1,4 +1,5 @@
 "use client";
+import ImportManuscript from "@/components/ImportManuscript";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -202,6 +203,7 @@ export default function Studio({ project, chapters, chapter, openAi = false }: {
               ))}
             </ol>
             <button onClick={addChapter} className="mt-3 w-full rounded-lg border border-dashed border-electric/50 py-2 text-sm text-electric hover:bg-electric/10">+ Add chapter</button>
+            <div className="mt-2"><ImportManuscript projectId={project.id} label="Add chapters from a file" /></div>
             {list.length > 1 && <button onClick={deleteChapter} className="mt-2 w-full rounded-lg py-1.5 text-xs opacity-60 hover:text-red-600 hover:opacity-100">Delete this chapter</button>}
           </nav>
         )}

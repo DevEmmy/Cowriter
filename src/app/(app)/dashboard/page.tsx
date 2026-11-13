@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getUser } from "@/lib/auth";
 import { dashboardStats } from "@/lib/stats";
 import NewProject from "@/components/NewProject";
+import ImportManuscript from "@/components/ImportManuscript";
 
 export const dynamic = "force-dynamic";
 const typeLabel = (t: string) => t.replace("_", " ");
@@ -20,7 +21,7 @@ export default async function Dashboard() {
           <h1 className="text-3xl font-bold">Welcome back{user.name ? `, ${user.name.split(" ")[0]}` : ""}</h1>
           <p className="mt-1 text-muted">Your ideas. Your voice. A better story.</p>
         </div>
-        <NewProject />
+        <div className="flex flex-wrap gap-3"><ImportManuscript /><NewProject /></div>
       </header>
 
       {last && (

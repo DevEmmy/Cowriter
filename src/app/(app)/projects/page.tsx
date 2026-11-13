@@ -2,6 +2,7 @@ import { desc, eq, sql } from "drizzle-orm";
 import { getUser } from "@/lib/auth";
 import { db, schema } from "@/lib/db";
 import NewProject from "@/components/NewProject";
+import ImportManuscript from "@/components/ImportManuscript";
 import ProjectList from "@/components/ProjectList";
 
 export const dynamic = "force-dynamic";
@@ -18,7 +19,7 @@ export default async function Projects() {
     <div className="mx-auto max-w-5xl">
       <header className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-bold">My Projects</h1>
-        <NewProject label="New project" />
+        <div className="flex flex-wrap gap-3"><ImportManuscript /><NewProject label="New project" /></div>
       </header>
       <ProjectList projects={rows.map((r) => ({ ...r, updatedAt: r.updatedAt.toISOString() }))} />
     </div>
