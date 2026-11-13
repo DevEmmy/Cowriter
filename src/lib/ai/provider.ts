@@ -80,6 +80,8 @@ function mock(i: GenInput): string {
     const t = i.messages.at(-1)?.content.split("CHAPTER TEXT:\n")[1] ?? "";
     return JSON.stringify({ issues: [{ severity: "high", category: "character", quote: t.slice(0, 40), problem: "Mock continuity problem.", reference: "Story Bible" }, { severity: "low", category: "fact", quote: "This sentence is not in the chapter at all.", problem: "Invented.", reference: "nowhere" }] });
   }
+  if (kind === "analyse") { const t = i.messages.at(-1)?.content.split(":\n")[1] ?? ""; return JSON.stringify({ summary: "A mock editor summary.", tone: "Wistful", pacing: "Steady", strengths: [{ point: "Strong opening image.", evidence: t.slice(0, 30) }], improvements: [{ point: "Vary sentence openings.", evidence: "A phrase that is not in the chapter." }] }); }
+  if (kind === "cover") return JSON.stringify({ template: "frame", palette: "midnight", font: "serif", tagline: "Some secrets keep the tide in.", concept: "A mock concept." });
   if (kind === "promptfields") return JSON.stringify({ context: "Inferred context.", objective: "Inferred objective.", tone: "Tender", pacing: "Slow" });
   const last = i.messages[i.messages.length - 1]?.content ?? "";
   const m = last.match(/ABOUT (\d+) WORDS/);

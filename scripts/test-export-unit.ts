@@ -1,0 +1,21 @@
+import assert from "node:assert";
+import { htmlToBlocks, blockText } from "../src/lib/export/blocks";
+import { toTxt, toDocx, toPdf } from "../src/lib/export/build";
+const html = '<h1>Part one</h1><p style="text-align: center">Centered <strong>bold</strong> and <em>italic</em> &amp; more</p><blockquote><p>A quote</p></blockquote><ul><li><p>one</p></li><li><p>two</p></li></ul><ol><li><p>first</p></li></ol><p>Line<br>break</p><hr><p>Ẹ ṣeun, ọrẹ mi. “Smart” — dash …</p><p></p>';
+const b = htmlToBlocks(html);
+assert.deepStrictEqual(b.map((x) => x.type), ["h1", "p", "quote", "li", "li", "li", "p", "hr", "p"]);
+assert.equal(b[1].align, "center"); assert.ok(b[1].runs.some((r) => r.bold && r.text === "bold")); assert.ok(b[1].runs.some((r) => r.italic));
+assert.equal(blockText(b[1]), "Centered bold and italic & more");
+assert.equal(b[5].ordered, 1);
+import fs from "node:fs";
+(async () => {
+const input = { title: "My Novel", author: "Ada", chapters: [{ title: "One", content: html }, { title: "Two", content: "<p>Second chapter text.</p>" }] };
+const txt = toTxt(input); assert.match(txt, /MY NOVEL\nby Ada/); assert.match(txt, /- one/); assert.match(txt, /1\. first/); assert.match(txt, /Ẹ ṣeun, ọrẹ mi/); assert.match(txt, /\* \* \*/);
+const docx = await toDocx(input); assert.equal(docx.subarray(0, 2).toString(), "PK");
+const pdf = await toPdf(input); assert.equal(Buffer.from(pdf.subarray(0, 5)).toString(), "%PDF-"); assert.ok(pdf.length > 2000);
+const long = { title: "Long", author: "", chapters: [{ title: "Big", content: Array.from({ length: 120 }, (_, i) => `<p>${"Paragraph ".repeat(40)}${i} 😀 end.</p>`).join("") }] };
+const lp = await toPdf(long); assert.ok(lp.length > 5000);
+const { PDFDocument } = await import("pdf-lib"); assert.ok((await PDFDocument.load(lp)).getPageCount() > 10);
+fs.writeFileSync("/tmp/sample.pdf", pdf); fs.writeFileSync("/tmp/sample.docx", docx);
+console.log("export unit ok");
+})().catch((e) => { console.error(e); process.exit(1); });

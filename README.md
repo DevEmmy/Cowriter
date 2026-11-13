@@ -2,17 +2,33 @@
 
 Your Ideas. Your Voice. A Better Story.
 
-A creative writing studio: manuscript editor with autosave and version history, projects, goals and streaks, plus an AI writing partner (chat, improve selection, chapter expansion), My Writing Voice, and a local prose check.
+A creative writing studio with a real backend:
+
+- **Write**: manuscript editor with autosave, version history, projects, goals and streaks.
+- **AI partner**: chat, improve a selection, chapter expansion, My Writing Voice, prose check. Every AI result is a suggestion; nothing edits your manuscript on its own.
+- **Create**: Idea Lab (ideas, characters, plot, chapter breakdowns), prompt builder, Cover Studio (PNG and SVG download).
+- **Refine**: Story Bible, manuscript memory, Story Guard (continuity checks with verified quotes), Chapter Analyser, optional third-party AI-detector checks, Writing Analytics.
+- **Keep**: export any manuscript as DOCX, PDF (6 x 9 in, full Unicode including Yoruba diacritics) or TXT.
 
 ## Run locally
 1. `cp .env.example .env.local` and fill in `DATABASE_URL` and `AUTH_SECRET`.
-2. Create the tables: run `drizzle/0000_init.sql`, then `drizzle/0001_stage2.sql`, `0002_stage3.sql`, `0003_stage4.sql`, in order, in your Postgres (Supabase or Neon: SQL Editor).
+2. Create the tables: paste `supabase-setup.sql` into your Postgres (Supabase: SQL Editor). If you already ran an earlier version, run `supabase-upgrade.sql` instead. Regenerate both with `scripts/make-setup-sql.sh` after adding a migration.
 3. `npm install && npm run dev`
 
+## Honest by design
+- AI providers are swappable (`AI_PROVIDER`: gemini, groq). With no key, AI features say so and everything else still works.
+- Story Guard and the analyser only show an AI finding if the text it quotes really exists in your chapter.
+- Detector integrations (GPTZero, Originality.ai) show a number only when the provider returned one. They are written from the vendors' public API docs and have not been run against the live services. Without a key they are simply off.
+- Cover Studio draws covers itself from templates. AI only suggests a layout, palette and tagline; it does not generate images.
+
 ## Tests
-- Local Postgres for tests: `scripts/pg-start.sh`. AI tests run with `AI_PROVIDER=mock`.
-- `scripts/test-ai-unit.ts`, `scripts/test-provider.ts`, `scripts/test-ai-http.sh`, `scripts/test-ai-ui.mjs` (AI features)
-- `scripts/test-manuscript.ts` (data layer), `scripts/test-http.sh` (API, run against a dev server), `scripts/test-ui.mjs` (editor in Chrome).
+- Local Postgres for tests: `scripts/pg-start.sh`. AI tests run with `AI_PROVIDER=mock`. Run UI tests against `npm run build && npm start`.
+- Unit: `test-ai-unit.ts`, `test-provider.ts`, `test-json.ts`, `test-diagnose.ts`, `test-ca.ts`, `test-stage4-unit.ts`, `test-export-unit.ts`, `test-cover-unit.ts`
+- API: `test-http.sh`, `test-ai-http.sh`, `test-stage3.sh`, `test-stage4.sh`, `test-stage5.sh` (needs `scripts/fake-detector.mjs` and the detector env vars shown in that script)
+- Browser (Chrome): `test-ui.mjs`, `test-ai-ui.mjs`, `test-stage3-ui.mjs`, `test-stage4-ui.mjs` (includes phone layout), `test-stage5-ui.mjs`
 
 ## Deploy (Netlify)
-Import the repo in Netlify and set `DATABASE_URL`, `AUTH_SECRET` and `GEMINI_API_KEY` as environment variables.
+Import the repo in Netlify and set `DATABASE_URL` (Supabase transaction pooler, port 6543), `AUTH_SECRET` (40+ random characters), `GEMINI_API_KEY`, and `DATABASE_CA` (Supabase's CA certificate text) if the database certificate is not trusted. Optional: `GPTZERO_API_KEY`, `ORIGINALITY_API_KEY`.
+
+## Interface principles
+Mobile gets a bottom tab bar inside the thumb zone with a "More" sheet; every touch target is at least 44 px; text meets WCAG AA contrast; all controls are keyboard reachable with visible focus; charts have text or table alternatives; destructive actions ask first.

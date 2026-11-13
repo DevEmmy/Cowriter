@@ -22,6 +22,7 @@ await page.click('button:has-text("Generate suggestions")');
 await page.locator("text=Mock Name").waitFor();
 t("character card shown", await page.locator("text=Fears being found out.").count() === 1);
 await page.locator("text=Earlier ideas").waitFor();
+await page.waitForFunction(() => [...document.querySelectorAll("section")].find((x) => x.querySelector("h2")?.textContent === "Earlier ideas")?.querySelectorAll("li").length === 2, null, { timeout: 5000 }).catch(() => {});
 t("history has 2 entries", await page.locator("section:has(h2:has-text('Earlier ideas')) li").count() === 2);
 await page.locator("section:has(h2:has-text('Earlier ideas')) li button:has-text('lighthouse')").last().click();
 t("reopen history shows idea", await page.locator("text=Direction A.").count() === 1);

@@ -158,6 +158,20 @@ ALTER TABLE "guard_reports" ADD CONSTRAINT "guard_reports_chapter_id_chapters_id
 CREATE INDEX "bible_project_idx" ON "bible_entries" USING btree ("project_id","kind","position");
 CREATE INDEX "memory_project_idx" ON "chapter_memory" USING btree ("project_id");
 CREATE INDEX "guard_chapter_idx" ON "guard_reports" USING btree ("chapter_id","created_at");
+-- drizzle/0004_stage5.sql
+CREATE TABLE "covers" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"user_id" uuid NOT NULL,
+	"project_id" uuid NOT NULL,
+	"name" text NOT NULL,
+	"design" jsonb NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+
+ALTER TABLE "covers" ADD CONSTRAINT "covers_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;
+ALTER TABLE "covers" ADD CONSTRAINT "covers_project_id_projects_id_fk" FOREIGN KEY ("project_id") REFERENCES "public"."projects"("id") ON DELETE cascade ON UPDATE no action;
+CREATE INDEX "covers_project_idx" ON "covers" USING btree ("project_id","updated_at");
 -- Lock the tables against Supabase's public REST API (the app connects directly, so it is unaffected)
 do $$ declare t text; begin
   for t in select tablename from pg_tables where schemaname = 'public' loop

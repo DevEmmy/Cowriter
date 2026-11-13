@@ -130,3 +130,14 @@ export const guardReports = pgTable("guard_reports", {
   usedAi: boolean("used_ai").notNull().default(false),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 }, (t) => [index("guard_chapter_idx").on(t.chapterId, t.createdAt)]);
+
+// Cover Studio: saved cover designs (settings only; the artwork is rendered from them).
+export const covers = pgTable("covers", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  projectId: uuid("project_id").notNull().references(() => projects.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  design: jsonb("design").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [index("covers_project_idx").on(t.projectId, t.updatedAt)]);
