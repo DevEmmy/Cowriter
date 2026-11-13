@@ -7,6 +7,7 @@ import StarterKit from "@tiptap/starter-kit";
 import TextAlign from "@tiptap/extension-text-align";
 import { TextStyle, FontFamily, FontSize } from "@tiptap/extension-text-style";
 import { countWords, htmlToText } from "@/lib/words";
+import AiPanel from "@/components/AiPanel";
 
 interface Ch { id: string; title: string; wordCount: number }
 interface Current { id: string; title: string; content: string; revision: number; wordCount: number }
@@ -28,7 +29,7 @@ export default function Studio({ project, chapters, chapter }: { project: { id: 
   const [chars, setChars] = useState(0);
   const [dark, setDark] = useState(false);
   const [focus, setFocus] = useState(false);
-  const [panel, setPanel] = useState<"none" | "history" | "find">("none");
+  const [panel, setPanel] = useState<"none" | "history" | "find" | "ai">("none");
   const [recovered, setRecovered] = useState<string | null>(null);
 
   const rev = useRef(chapter?.revision ?? 1);
@@ -158,6 +159,7 @@ export default function Studio({ project, chapters, chapter }: { project: { id: 
         <StatusPill status={status} savedAt={savedAt} errMsg={errMsg} />
         <div className="ml-auto flex flex-wrap items-center gap-1 text-sm">
           <span className="mr-2 opacity-70" aria-live="polite">{words.toLocaleString()} words · {chars.toLocaleString()} characters</span>
+          <Btn onClick={() => setPanel(panel === "ai" ? "none" : "ai")} on={panel === "ai"}>AI</Btn>
           <Btn onClick={() => setPanel(panel === "find" ? "none" : "find")} on={panel === "find"}>Find</Btn>
           <Btn onClick={() => setPanel(panel === "history" ? "none" : "history")} on={panel === "history"}>History</Btn>
           <Btn onClick={() => { const v = !dark; setDark(v); try { localStorage.setItem("cowriter-dark", v ? "1" : "0"); } catch {} }}>{dark ? "Light" : "Dark"}</Btn>
@@ -210,6 +212,7 @@ export default function Studio({ project, chapters, chapter }: { project: { id: 
         </main>
 
         {panel === "history" && <History chapterId={chapter.id} dark={dark} panelBg={panelBg} onRestore={(v, r) => { editor?.commands.setContent(v.content); setTitle(v.title); titleRef.current = v.title; rev.current = r.revision; dirty.current = false; setStatus("saved"); setSavedAt(new Date(r.savedAt)); setWords(r.wordCount); setList((l) => l.map((c) => (c.id === chapter.id ? { ...c, title: v.title, wordCount: r.wordCount } : c))); }} saveBefore={save} />}
+        {panel === "ai" && editor && <AiPanel editor={editor} projectId={project.id} chapterId={chapter.id} panelBg={panelBg} dark={dark} onChanged={() => markDirty(editor.getHTML())} />}
         {panel === "find" && editor && <Find editor={editor} panelBg={panelBg} />}
       </div>
     </div>

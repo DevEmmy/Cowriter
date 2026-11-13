@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, integer, uuid, boolean, date, index, uniqueIndex } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, integer, uuid, boolean, date, index, uniqueIndex, jsonb } from "drizzle-orm/pg-core";
 
 export const users = pgTable("users", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -52,3 +52,25 @@ export const writingStats = pgTable("writing_stats", {
   day: date("day").notNull(),
   words: integer("words").notNull().default(0),
 }, (t) => [uniqueIndex("stats_user_day").on(t.userId, t.day)]);
+
+// Writing voice: one global profile per user plus optional per-project overrides (scope = "global" | projectId).
+export const writingProfiles = pgTable("writing_profiles", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  scope: text("scope").notNull().default("global"),
+  samples: text("samples").notNull().default(""),
+  analysis: jsonb("analysis"), // local stats + AI-written voice summary
+  instructions: text("instructions").notNull().default(""),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [uniqueIndex("profiles_user_scope").on(t.userId, t.scope)]);
+
+// One running conversation per project.
+export const messages = pgTable("messages", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  projectId: uuid("project_id").notNull().references(() => projects.id, { onDelete: "cascade" }),
+  chapterId: uuid("chapter_id"),
+  role: text("role").notNull(), // user | assistant
+  content: text("content").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [index("messages_project_idx").on(t.projectId, t.createdAt)]);
