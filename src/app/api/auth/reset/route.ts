@@ -24,7 +24,7 @@ export async function POST(req: Request) {
     const userId = await spendToken(p.data.token, "reset");
     if (!userId) return NextResponse.json({ error: DEAD }, { status: 400 });
     // A reset link proves control of the inbox, so the email also counts as verified.
-    await db().update(schema.users).set({ passwordHash: await bcrypt.hash(p.data.password, 11), emailVerifiedAt: new Date() }).where(eq(schema.users.id, userId));
+    await db().update(schema.users).set({ passwordHash: await bcrypt.hash(p.data.password, 11), emailVerifiedAt: new Date(), passwordChangedAt: new Date() }).where(eq(schema.users.id, userId));
     await createSession(userId);
     return NextResponse.json({ ok: true });
   } catch (e) {

@@ -91,10 +91,10 @@ function mock(i: GenInput): string {
   return `[mock reply] ${last.slice(0, 120)}`;
 }
 
-/** Shares the one free AI key fairly: each person gets a per-minute and a per-day allowance (AI_DAILY_LIMIT, default 40). */
+/** Shares the one free AI key fairly: each person gets a per-minute and a per-day allowance (AI_DAILY_LIMIT, default 20). */
 async function checkBudget() {
   const u = requestUser.getStore()?.userId; if (!u) return;
-  const day = Number(process.env.AI_DAILY_LIMIT ?? 40), min = Number(process.env.AI_PER_MINUTE_LIMIT ?? 6);
+  const day = Number(process.env.AI_DAILY_LIMIT ?? 20), min = Number(process.env.AI_PER_MINUTE_LIMIT ?? 5);
   const m = await hit(`ai:min:${u}`, min, 60);
   if (!m.ok) throw new AiError(`You are sending requests very quickly. Please wait ${m.retryAfter} seconds and try again.`, 429);
   const d = await hit(`ai:day:${u}`, day, 86400);

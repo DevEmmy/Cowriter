@@ -35,7 +35,12 @@ export async function getUserId(): Promise<string | null> {
   if (!token) return null;
   try {
     const { payload } = await jwtVerify(token, secret());
-    return typeof payload.sub === "string" ? payload.sub : null;
+    if (typeof payload.sub !== "string") return null;
+    // A password change or reset signs out every older session.
+    const [u] = await db().select({ at: schema.users.passwordChangedAt }).from(schema.users).where(eq(schema.users.id, payload.sub)).limit(1);
+    if (!u) return null;
+    if (u.at && (payload.iat ?? 0) < Math.floor(u.at.getTime() / 1000)) return null;
+    return payload.sub;
   } catch {
     return null;
   }

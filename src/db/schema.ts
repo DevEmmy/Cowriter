@@ -7,6 +7,7 @@ export const users = pgTable("users", {
   passwordHash: text("password_hash").notNull(),
   dailyGoal: integer("daily_goal").notNull().default(500),
   emailVerifiedAt: timestamp("email_verified_at", { withTimezone: true }),
+  passwordChangedAt: timestamp("password_changed_at", { withTimezone: true }), // sessions issued before this are signed out
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 

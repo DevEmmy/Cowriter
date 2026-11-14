@@ -12,7 +12,7 @@ A creative writing studio with a real backend:
 
 ## Run locally
 1. `cp .env.example .env.local` and fill in `DATABASE_URL` and `AUTH_SECRET`.
-2. Create the tables: paste `supabase-setup.sql` into your Postgres (Supabase: SQL Editor). If you already ran an earlier version, run `supabase-upgrade.sql` (stage 4-5 + accounts) instead, or just `supabase-upgrade-auth.sql` if you already ran that one. Regenerate both with `scripts/make-setup-sql.sh` after adding a migration.
+2. Create the tables: paste `supabase-setup.sql` into your Postgres (Supabase: SQL Editor). If you already ran an earlier version, run `supabase-update.sql` instead (safe to run any time, any number of times). Regenerate both with `scripts/make-setup-sql.sh` after adding a migration.
 3. `npm install && npm run dev`
 
 ## Honest by design
@@ -27,14 +27,14 @@ A creative writing studio with a real backend:
 - API: `test-http.sh`, `test-ai-http.sh`, `test-stage3.sh`, `test-stage4.sh`, `test-import.mjs` (import API+UI), `test-stage5.sh` (needs `scripts/fake-detector.mjs` and the detector env vars shown in that script)
 - Browser (Chrome): `test-ui.mjs`, `test-ai-ui.mjs`, `test-stage3-ui.mjs`, `test-stage4-ui.mjs` (includes phone layout), `test-stage5-ui.mjs`
 
-## Deploy (Netlify)
-Import the repo in Netlify and set `DATABASE_URL` (Supabase transaction pooler, port 6543), `AUTH_SECRET` (40+ random characters), `GEMINI_API_KEY`, and `DATABASE_CA` (Supabase's CA certificate text) if the database certificate is not trusted. Optional: `GPTZERO_API_KEY`, `ORIGINALITY_API_KEY`.
+## Deploy (Vercel or Netlify)
+See `HANDOVER.md` for the full guide. On Vercel (recommended; `vercel.json` sets the region and a daily keep-alive), or Netlify, set `DATABASE_URL` (Supabase transaction pooler, port 6543), `AUTH_SECRET` (40+ random characters), `GEMINI_API_KEY`, and `DATABASE_CA` (Supabase's CA certificate text) if the database certificate is not trusted. Optional: `GPTZERO_API_KEY`, `ORIGINALITY_API_KEY`.
 
 ## Accounts and fair use
 - Password reset and email confirmation need one free email provider: set `EMAIL_FROM` plus `RESEND_API_KEY` or `BREVO_API_KEY` (and `SITE_URL` if you use a custom domain). With none set, the site says reset is not available instead of pretending.
 - Login, sign-up, reset and email requests are rate limited in the database, so limits hold across serverless instances. `RATELIMIT_DISABLED=1` exists for automated tests only.
 - Each person gets a per-minute and per-day AI allowance (`AI_PER_MINUTE_LIMIT`, `AI_DAILY_LIMIT`) so one free AI key is shared fairly.
-- Test scripts: `test-auth.mjs` (needs `scripts/fake-email.mjs`), `test-aibudget.mjs`.
+- Test scripts: `test-auth.mjs` (needs `scripts/fake-email.mjs`), `test-aibudget.mjs`, `test-settings-ui.mjs`. Defaults: 20 AI requests per person per day. Users can change their password and delete their account in Settings; changing or resetting a password signs out other devices.
 
 ## Interface principles
 Mobile gets a bottom tab bar inside the thumb zone with a "More" sheet; every touch target is at least 44 px; text meets WCAG AA contrast; all controls are keyboard reachable with visible focus; charts have text or table alternatives; destructive actions ask first.

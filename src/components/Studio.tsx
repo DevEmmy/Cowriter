@@ -82,7 +82,7 @@ export default function Studio({ project, chapters, chapter, openAi = false }: {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editor, chapterId]);
 
-  function schedule() { if (timer.current) clearTimeout(timer.current); timer.current = setTimeout(save, 1200); }
+  function schedule() { if (timer.current) clearTimeout(timer.current); timer.current = setTimeout(save, 5000); } // 5s keeps server calls low on free hosting; leaving the tab saves at once and a local backup protects the text
   function markDirty(html?: string) {
     dirty.current = true;
     setStatus((s) => (s === "conflict" ? s : "unsaved"));
@@ -109,9 +109,9 @@ export default function Studio({ project, chapters, chapter, openAi = false }: {
   useEffect(() => {
     const flush = () => { if (document.visibilityState === "hidden") save(); };
     const warn = (e: BeforeUnloadEvent) => { if (dirty.current) { e.preventDefault(); e.returnValue = ""; } };
-    document.addEventListener("visibilitychange", flush);
+    document.addEventListener("visibilitychange", flush); window.addEventListener("pagehide", flush);
     window.addEventListener("beforeunload", warn);
-    return () => { document.removeEventListener("visibilitychange", flush); window.removeEventListener("beforeunload", warn); };
+    return () => { window.removeEventListener("pagehide", flush); document.removeEventListener("visibilitychange", flush); window.removeEventListener("beforeunload", warn); };
   }, [save]);
 
   async function goTo(id: string) {

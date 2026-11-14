@@ -193,6 +193,8 @@ CREATE TABLE "rate_limits" (
 ALTER TABLE "users" ADD COLUMN "email_verified_at" timestamp with time zone;
 ALTER TABLE "auth_tokens" ADD CONSTRAINT "auth_tokens_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;
 CREATE INDEX "auth_tokens_user_idx" ON "auth_tokens" USING btree ("user_id","kind");
+-- drizzle/0006_sessions.sql
+ALTER TABLE "users" ADD COLUMN "password_changed_at" timestamp with time zone;
 -- Lock the tables against Supabase's public REST API (the app connects directly, so it is unaffected)
 do $$ declare t text; begin
   for t in select tablename from pg_tables where schemaname = 'public' loop

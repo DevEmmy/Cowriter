@@ -67,4 +67,31 @@ const p3 = await (await fetch(`${NO}/dashboard`, { headers: { cookie: dash.split
 // pages render
 for (const p of ["/forgot", "/reset?token=abc", "/verify?token=abc", "/login"]) t(`page ${p} renders`, (await fetch(`${B}${p}`)).status === 200);
 t("login page links to forgot", (await (await fetch(`${B}/login`)).text()).includes("/forgot"));
+
+// sessions, change password, delete account, legal, health, headers
+const e5 = uniq(); r = await j(`${B}/api/auth/signup`, { email: e5, password: "password123", name: "Z" }, fwd("10.5.0.1")); const oldCookie = r.headers.get("set-cookie").split(";")[0];
+const me = (c) => fetch(`${B}/api/projects`, { method: "POST", headers: { cookie: c, "Content-Type": "application/json" }, body: JSON.stringify({ title: "P", type: "novel" }) });
+t("session works before change", (await me(oldCookie)).status === 200);
+r = await j(`${B}/api/me/password`, { current: "WRONG-wrong", next: "newpassword9" }, { cookie: oldCookie }); t("change password needs correct current password", r.status === 400);
+await new Promise((x) => setTimeout(x, 1100));
+r = await j(`${B}/api/me/password`, { current: "password123", next: "newpassword9" }, { cookie: oldCookie }); const newCookie = r.headers.get("set-cookie")?.split(";")[0];
+t("change password ok and returns fresh session", r.status === 200 && !!newCookie);
+t("old session is signed out everywhere", (await me(oldCookie)).status === 401);
+t("new session works", (await me(newCookie)).status === 200);
+r = await j(`${B}/api/auth/login`, { email: e5, password: "newpassword9" }, fwd("10.5.0.2")); t("login with changed password", r.status === 200);
+// reset signs out old sessions too
+const e6 = uniq(); r = await j(`${B}/api/auth/signup`, { email: e6, password: "password123" }, fwd("10.6.0.1")); const c6 = r.headers.get("set-cookie").split(";")[0];
+await j(`${B}/api/auth/forgot`, { email: e6 }, fwd("10.6.0.2")); const tk6 = tokenFrom((await mails(e6)).find((m) => /Reset/.test(m.subject)), "reset");
+await new Promise((x) => setTimeout(x, 1100));
+await j(`${B}/api/auth/reset`, { token: tk6, password: "resetpass123" }, fwd("10.6.0.3"));
+t("password reset signs out older sessions", (await me(c6)).status === 401);
+// delete
+r = await j(`${B}/api/me`, { password: "wrong-wrong" }, { cookie: newCookie }, "DELETE"); t("delete rejects wrong password", r.status === 400);
+r = await j(`${B}/api/me`, { password: "newpassword9" }, { cookie: newCookie }, "DELETE"); t("delete account works", r.status === 200);
+t("deleted account session is dead", (await me(newCookie)).status === 401);
+r = await j(`${B}/api/auth/login`, { email: e5, password: "newpassword9" }, fwd("10.5.0.3")); t("deleted account cannot log in", r.status === 401);
+const hs = await fetch(`${B}/privacy`); t("privacy page", hs.status === 200 && (await hs.text()).includes("Privacy Policy"));
+t("terms page", (await fetch(`${B}/terms`)).status === 200);
+t("health ok", (await (await fetch(`${B}/api/health`)).json()).ok === true);
+const hh = (await fetch(`${B}/login`)).headers; t("security headers present", hh.get("x-frame-options") === "DENY" && hh.get("x-content-type-options") === "nosniff" && !!hh.get("strict-transport-security"));
 console.log(`---- ${pass} passed, ${fail} failed`); process.exit(fail ? 1 : 0);

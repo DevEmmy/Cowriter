@@ -36,7 +36,7 @@ export default async function Home() {
           ))}
         </section>
       </main>
-      <footer className="border-t border-lavender py-8 text-center text-sm text-muted">© {new Date().getFullYear()} Co Writer</footer>
+      <footer className="border-t border-lavender py-8 text-center text-sm text-muted">© {new Date().getFullYear()} Co Writer · <Link className="underline" href="/privacy">Privacy</Link> · <Link className="underline" href="/terms">Terms</Link></footer>
     </div>
   );
 }
