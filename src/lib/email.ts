@@ -11,6 +11,7 @@ export const emailConfigured = () => emailProvider() !== null;
 export function siteUrl(req?: Request): string {
   const s = process.env.SITE_URL ?? process.env.URL ?? process.env.DEPLOY_PRIME_URL;
   if (s) return s.replace(/\/$/, "");
+  if (process.env.VERCEL_PROJECT_PRODUCTION_URL) return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;
   if (process.env.NODE_ENV !== "production" && req) return new URL(req.url).origin;
   throw new Error("SITE_URL is not set");
 }
