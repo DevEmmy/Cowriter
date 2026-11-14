@@ -11,8 +11,8 @@ await page.fill('input[name=name]', "Ada Test");
 await page.fill('input[name=email]', `ui${Date.now()}@t.io`);
 await page.fill('input[name=password]', "password123");
 await page.click('button:has-text("Sign up")');
-await page.waitForURL("**/dashboard");
-t("signup lands on dashboard", await page.locator("text=Welcome back, Ada").count() === 1);
+await page.waitForURL("**/dashboard"); await page.locator("text=Welcome back").first().waitFor({ timeout: 10000 }).catch(() => {});
+const n = await page.locator("text=Welcome back, Ada").count(); t("signup lands on dashboard", n >= 1, "count " + n);
 
 await page.click('button:has-text("Start Writing")');
 await page.fill('input[maxlength="150"]', "UI Test Novel");

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireUserId } from "@/lib/auth";
 import { setupHint } from "@/lib/diagnose";
+import { requestUser } from "@/lib/requestUser";
 
 type Ctx<P> = { params: Promise<P> };
 /** Wraps a route handler: authenticates, converts thrown Responses and errors into JSON. */
@@ -8,7 +9,7 @@ export function authed<P = Record<string, never>>(fn: (userId: string, req: Requ
   return async (req: Request, ctx: Ctx<P>) => {
     try {
       const userId = await requireUserId();
-      return await fn(userId, req, await ctx.params);
+      return await requestUser.run({ userId }, async () => fn(userId, req, await ctx.params));
     } catch (e) {
       if (e instanceof Response) return e;
       console.error(e);

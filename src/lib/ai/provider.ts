@@ -1,5 +1,7 @@
 // Provider-agnostic text generation. Swap providers with AI_PROVIDER (gemini | groq | mock)
 // without touching any feature code.
+import { requestUser } from "@/lib/requestUser";
+import { hit } from "@/lib/ratelimit";
 export interface Msg { role: "user" | "assistant"; content: string }
 export interface GenInput { system: string; messages: Msg[]; temperature?: number; maxOutputTokens?: number }
 
@@ -89,7 +91,18 @@ function mock(i: GenInput): string {
   return `[mock reply] ${last.slice(0, 120)}`;
 }
 
+/** Shares the one free AI key fairly: each person gets a per-minute and a per-day allowance (AI_DAILY_LIMIT, default 40). */
+async function checkBudget() {
+  const u = requestUser.getStore()?.userId; if (!u) return;
+  const day = Number(process.env.AI_DAILY_LIMIT ?? 40), min = Number(process.env.AI_PER_MINUTE_LIMIT ?? 6);
+  const m = await hit(`ai:min:${u}`, min, 60);
+  if (!m.ok) throw new AiError(`You are sending requests very quickly. Please wait ${m.retryAfter} seconds and try again.`, 429);
+  const d = await hit(`ai:day:${u}`, day, 86400);
+  if (!d.ok) throw new AiError(`You have used today's ${day} free AI requests. They refresh in about ${Math.max(1, Math.ceil(d.retryAfter / 3600))} hour(s). Your writing and everything else still works.`, 429);
+}
+
 export async function generate(i: GenInput): Promise<string> {
+  if (provider() !== "none") await checkBudget();
   switch (provider()) {
     case "gemini": return gemini(i);
     case "groq": return groq(i);

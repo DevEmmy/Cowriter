@@ -6,7 +6,26 @@ export const users = pgTable("users", {
   name: text("name").notNull().default(""),
   passwordHash: text("password_hash").notNull(),
   dailyGoal: integer("daily_goal").notNull().default(500),
+  emailVerifiedAt: timestamp("email_verified_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+// One-time links for password reset and email verification. Only a SHA-256 hash of the token is stored.
+export const authTokens = pgTable("auth_tokens", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  kind: text("kind").notNull(), // reset | verify
+  tokenHash: text("token_hash").notNull().unique(),
+  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+  usedAt: timestamp("used_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [index("auth_tokens_user_idx").on(t.userId, t.kind)]);
+
+// Shared rate-limit counters. Kept in the database because serverless instances do not share memory.
+export const rateLimits = pgTable("rate_limits", {
+  key: text("key").primaryKey(),
+  count: integer("count").notNull().default(0),
+  windowStart: timestamp("window_start", { withTimezone: true }).notNull().defaultNow(),
 });
 
 export const projects = pgTable("projects", {

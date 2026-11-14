@@ -2,6 +2,8 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getUser } from "@/lib/auth";
 import LogoutButton from "@/components/LogoutButton";
+import VerifyBanner from "@/components/VerifyBanner";
+import { emailConfigured } from "@/lib/email";
 import { Sidebar, BottomNav } from "@/components/NavLinks";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
@@ -19,7 +21,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       <header className="flex items-center justify-between border-b border-line bg-white px-5 py-3 md:hidden">
         <Link href="/dashboard" className="bg-gradient-to-r from-electric to-coral bg-clip-text text-lg font-bold text-transparent">Co Writer</Link>
       </header>
-      <main id="main" className="min-w-0 flex-1 px-4 pb-28 pt-6 md:px-10 md:pb-10 md:pt-8">{children}</main>
+      <main id="main" className="min-w-0 flex-1 px-4 pb-28 pt-6 md:px-10 md:pb-10 md:pt-8">{!user.emailVerifiedAt && emailConfigured() && <VerifyBanner email={user.email} />}{children}</main>
       <BottomNav name={name} />
     </div>
   );
